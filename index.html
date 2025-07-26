@@ -2,16 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Odidnni - Easy Team Finder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Oditni - Global Team Finder</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>어디끼 | Global Team Finder</h1>
+
   <div class="form-links">
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLScYu05BsNfJ8la860fWReEvrArtUdvka3a83qzYg16D_7x3ag/viewform" target="_blank">Register </a>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdrK09vgIgKOJCCxjeSXMQWHIOfiihTk-6fcbfaInbB-WOVaA/viewform" target="_blank">등록 </a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLScYu05BsNfJ8la860fWReEvrArtUdvka3a83qzYg16D_7x3ag/viewform" target="_blank">Register</a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdrK09vgIgKOJCCxjeSXMQWHIOfiihTk-6fcbfaInbB-WOVaA/viewform" target="_blank">등록</a>
   </div>
+
   <div class="filters">
     <select id="country-filter">
       <option value="">Global</option>
@@ -29,12 +31,14 @@
       <option value="Brasil">Brasil</option>
       <option value="Türkiye">Türkiye</option>
     </select>
+
     <select id="type-filter">
       <option value="">🔍 All Types</option>
       <option value="recruiting">Recruiting</option>
       <option value="seeking">Seeking Team</option>
       <option value="both">Both</option>
     </select>
+
     <div id="category-checkboxes">
       <label><input type="checkbox" value="Developer" checked>Developer</label>
       <label><input type="checkbox" value="Designer">Designer</label>
@@ -43,6 +47,7 @@
       <label><input type="checkbox" value="Marketing">Marketing</label>
       <label><input type="checkbox" value="Translator">Translator</label>
     </div>
+
     <input type="text" id="search-input" placeholder="🔍 Search keyword..." />
   </div>
 
@@ -61,7 +66,9 @@
   </table>
 
   <div class="pagination" id="pagination"></div>
-  <div id="modal" class="modal hidden">
+
+  <!-- 상세 내용 모달 -->
+  <div id="modal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
       <div id="modal-body"></div>
