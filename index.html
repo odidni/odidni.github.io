@@ -4,177 +4,53 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Odidnni - Easy Team Finder</title>
-  <style>
-    :root {
-      --bg: #f9f9f9;
-      --card-bg: #fff;
-      --accent: #007aff;
-      --text-main: #1c1c1e;
-      --text-sub: #8e8e93;
-      --radius: 12px;
-    }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text-main);
-    }
-    h1 {
-      text-align: center;
-      font-weight: 600;
-      margin: 1rem 0 0.5rem;
-      font-size: 1.6rem;
-    }
-    .filters, .form-links {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin: 0.5rem auto 1rem;
-      padding: 0 0.5rem;
-      max-width: 1000px;
-    }
-    select, input[type="text"], .form-links a {
-      padding: 0.4rem 0.8rem;
-      font-size: 0.95rem;
-      border: 1px solid #d1d1d6;
-      border-radius: var(--radius);
-      background: #fff;
-      color: var(--text-main);
-      outline: none;
-      transition: box-shadow 0.2s;
-      flex: 1;
-      min-width: 140px;
-      max-width: 220px;
-    }
-    select:focus, input:focus {
-      box-shadow: 0 0 0 2px var(--accent);
-    }
-    .form-links a {
-      background: var(--accent);
-      color: #fff;
-      text-decoration: none;
-      font-weight: 500;
-      text-align: center;
-    }
-    ul#post-list {
-      list-style: none;
-      padding: 0;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    li {
-      background: var(--card-bg);
-      margin: 0.2rem;
-      padding: 0.6rem;
-      border-radius: var(--radius);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-      cursor: pointer;
-      font-size: 0.9rem;
-      display: flex;
-      gap: 1rem;
-    }
-    li span {
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    li:hover {
-      background-color: #f0f0f0;
-    }
-    .skeleton {
-      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-      background-size: 400% 100%;
-      animation: shimmer 1.2s infinite;
-      height: 40px;
-      border-radius: var(--radius);
-      margin: 0.2rem;
-    }
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-    .pagination {
-      display: flex;
-      justify-content: center;
-      margin: 1rem 0.5rem;
-      gap: 0.3rem;
-      flex-wrap: wrap;
-    }
-    .pagination button {
-      padding: 0.3rem 0.6rem;
-      font-size: 0.9rem;
-      border: none;
-      border-radius: var(--radius);
-      background: #e5e5ea;
-      cursor: pointer;
-    }
-    .pagination button.active {
-      background: var(--accent);
-      color: white;
-    }
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.4rem;
-        margin-top: 1rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>어디끼 | Global Team Finder</h1>
+  <div class="form-links">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLScYu05BsNfJ8la860fWReEvrArtUdvka3a83qzYg16D_7x3ag/viewform" target="_blank">Register </a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdrK09vgIgKOJCCxjeSXMQWHIOfiihTk-6fcbfaInbB-WOVaA/viewform" target="_blank">등록 </a>
+  </div>
+  <div class="filters">
+    <select id="country-filter">
+      <option value="">Global</option>
+      <option value="대한민국">대한민국</option>
+      <option value="日本">日本</option>
+      <option value="中国">中国</option>
+      <option value="ไทย">ไทย</option>
+      <option value="Việt Nam">Việt Nam</option>
+      <option value="Indonesia">Indonesia</option>
+      <option value="United States">United States</option>
+      <option value="Français">Français</option>
+      <option value="España">España</option>
+      <option value="Deutschland">Deutschland</option>
+      <option value="Россия">Россия</option>
+      <option value="Brasil">Brasil</option>
+      <option value="Türkiye">Türkiye</option>
+    </select>
+    <select id="type-filter">
+      <option value="">🔍 All Types</option>
+      <option value="recruiting">Recruiting</option>
+      <option value="seeking">Seeking Team</option>
+      <option value="both">Both</option>
+    </select>
+    <div id="category-checkboxes">
+      <label><input type="checkbox" value="Developer" checked>Developer</label>
+      <label><input type="checkbox" value="Designer">Designer</label>
+      <label><input type="checkbox" value="Planner">Planner</label>
+      <label><input type="checkbox" value="Artist">Artist</label>
+      <label><input type="checkbox" value="Marketing">Marketing</label>
+      <label><input type="checkbox" value="Translator">Translator</label>
+    </div>
+    <input type="text" id="search-input" placeholder="🔍 Search keyword..." />
+  </div>
   <ul id="post-list">
     <li class="skeleton"></li>
     <li class="skeleton"></li>
     <li class="skeleton"></li>
   </ul>
   <div class="pagination" id="pagination"></div>
-  <script>
-    const query = new URLSearchParams(window.location.search);
-    const titleParam = query.get("title");
-    const timeParam = query.get("time");
-
-    fetch("https://script.google.com/macros/s/AKfycbwHoe5QiK6ee56qLgMB1G7gfRR36QwQXpXDJj2urIvZb0lM7oykUWe-q5vbMV9kKhmA/exec?country=대한민국")
-      .then(res => res.json())
-      .then(data => {
-        const ul = document.getElementById("post-list");
-        ul.innerHTML = "";
-        data.forEach(post => {
-          const li = document.createElement("li");
-          li.innerHTML = `<span>${post["제목"] || post["Title"]}</span><span>${post["구분"] || post["Type"]}</span><span>${post["예상 기간"] || post["Duration"]}</span>`;
-          li.addEventListener("click", () => {
-            const desc = post["내용"] || post["Description"];
-            const link = post["참고 정보"] || post["Link"];
-            const roles = post["모집 분야"] || post["Roles"];
-            const modal = document.createElement("div");
-            modal.style.position = "fixed";
-            modal.style.top = "0";
-            modal.style.left = "0";
-            modal.style.width = "100%";
-            modal.style.height = "100%";
-            modal.style.background = "rgba(0,0,0,0.5)";
-            modal.style.display = "flex";
-            modal.style.justifyContent = "center";
-            modal.style.alignItems = "center";
-            modal.innerHTML = `
-              <div style="background:white;padding:1rem;border-radius:var(--radius);max-width:90%;max-height:80%;overflow:auto">
-                <h3>${post["제목"] || post["Title"]}</h3>
-                <p>${desc}</p>
-                <p><strong>Duration:</strong> ${post["예상 기간"] || post["Duration"]}</p>
-                <p><strong>Roles:</strong> ${roles}</p>
-                ${link ? `<p><a href="${link}" target="_blank">More Info</a></p>` : ""}
-                <button onclick="this.parentElement.parentElement.remove()">Close</button>
-              </div>`;
-            document.body.appendChild(modal);
-          });
-          ul.appendChild(li);
-
-          if (titleParam && timeParam && (post["제목"] === titleParam || post["Title"] === titleParam)) {
-            li.click();
-          }
-        });
-      });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
