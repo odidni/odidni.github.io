@@ -83,21 +83,23 @@ function renderPosts() {
     list.innerHTML = '<tr><td colspan="4">No results found.</td></tr>';
   } else {
     pageData.forEach(post => {
-      const isKR = post["국가"] === "대한민국";
-      const title = isKR ? post["제목"] : post["Title"];
-      const roles = isKR ? post["모집 분야"] : post["Roles"];
-      const duration = isKR ? post["예상 기간"] : post["Duration"];
-      const date = isKR ? post["등록일"] : post["Date"];
+        const isKR = post["국가"] === "대한민국";
+        const title = isKR ? post["제목"] : post["Title"];
+        const roles = isKR ? post["모집 분야"] : post["Roles"];
+        const duration = isKR ? post["예상 기간"] : post["Duration"];
+        const dateRaw = isKR ? post["등록일"] : post["Date"];
+        const timestamp = post["타임스탬프"];
+        const date = dateRaw || (timestamp ? new Date(timestamp).toISOString().split('T')[0] : '');
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
         <td>${date}</td>
         <td class="clickable" data-title="${title}" data-date="${date}">${title}</td>
         <td>${roles}</td>
         <td>${duration}</td>
-      `;
-      tr.addEventListener("click", () => showModal(post));
-      list.appendChild(tr);
+        `;
+        tr.addEventListener("click", () => showModal(post));
+        list.appendChild(tr);
     });
   }
 
@@ -148,3 +150,10 @@ function showModal(post) {
 
   document.getElementById("modal").classList.remove("hidden");
 }
+
+function formatDateString(dateStr) {
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return '-';
+  return date.toISOString().split('T')[0]; // 'YYYY-MM-DD'만 추출
+}
+
