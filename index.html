@@ -76,5 +76,39 @@
   </div>
 
   <script src="script.js"></script>
+  <script>
+    function autoLinkify(text) {
+      const urlRegex = /(https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=]+)/gi;
+      return text.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+    }
+
+    function showModal(post) {
+      const isKR = post["국가"] === "대한민국";
+      const title = isKR ? post["제목"] : post["Title"];
+      const desc = isKR ? post["내용"] : post["Description"];
+      const roles = isKR ? post["모집 분야"] : post["Roles"];
+      const duration = isKR ? post["예상 기간"] : post["Duration"];
+      const link = isKR ? post["참고 링크"] : post["Link"];
+      const contact = isKR ? post["연락처"] : post["Contact"];
+      const date = isKR ? post["등록일"] || post["타임스탬프"] : post["Date"];
+
+      const modalBody = document.getElementById("modal-body");
+      modalBody.innerHTML = `
+        <h2>${title}</h2>
+        <p><strong>📅 Date:</strong> ${date}</p>
+        <p><strong>🧑‍💻 Roles:</strong> ${roles}</p>
+        <p><strong>🕒 Duration:</strong> ${duration}</p>
+        <p><strong>📬 Contact:</strong> ${autoLinkify(contact || "")}</p>
+        <p><strong>📄 Description:</strong><br>${autoLinkify(desc || "")}</p>
+        ${link ? `<p><a href="${link}" target="_blank">🔗 More Info</a></p>` : ""}
+      `;
+
+      document.getElementById("modal").classList.remove("hidden");
+    }
+
+    document.querySelector(".modal .close").addEventListener("click", () => {
+      document.getElementById("modal").classList.add("hidden");
+    });
+  </script>
 </body>
 </html>
