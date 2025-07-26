@@ -22,25 +22,30 @@
     h1 {
       text-align: center;
       font-weight: 600;
-      margin: 2rem 0 1rem;
-      font-size: 1.8rem;
+      margin: 1rem 0 0.5rem;
+      font-size: 1.6rem;
     }
     .filters, .form-links {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 1rem;
-      margin-bottom: 2rem;
+      gap: 0.5rem;
+      margin: 0.5rem auto 1rem;
+      padding: 0 0.5rem;
+      max-width: 1000px;
     }
     select, input[type="text"], .form-links a {
-      padding: 0.6rem 1rem;
-      font-size: 1rem;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.95rem;
       border: 1px solid #d1d1d6;
       border-radius: var(--radius);
       background: #fff;
       color: var(--text-main);
       outline: none;
       transition: box-shadow 0.2s;
+      flex: 1;
+      min-width: 140px;
+      max-width: 220px;
     }
     select:focus, input:focus {
       box-shadow: 0 0 0 2px var(--accent);
@@ -50,7 +55,7 @@
       color: #fff;
       text-decoration: none;
       font-weight: 500;
-      border: none;
+      text-align: center;
     }
     ul#post-list {
       list-style: none;
@@ -60,19 +65,19 @@
     }
     li {
       background: var(--card-bg);
-      margin-bottom: 1rem;
-      padding: 1.5rem;
+      margin: 0 0.5rem 0.5rem;
+      padding: 1rem;
       border-radius: var(--radius);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
     li h3 {
-      margin: 0 0 0.5rem;
-      font-size: 1.2rem;
+      margin: 0 0 0.3rem;
+      font-size: 1.1rem;
       font-weight: 600;
     }
     li p {
-      margin: 0.4rem 0;
-      font-size: 0.95rem;
+      margin: 0.3rem 0;
+      font-size: 0.9rem;
       color: var(--text-sub);
     }
     li a {
@@ -83,9 +88,9 @@
       background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
       background-size: 400% 100%;
       animation: shimmer 1.2s infinite;
-      height: 100px;
+      height: 80px;
       border-radius: var(--radius);
-      margin-bottom: 1rem;
+      margin: 0 0.5rem 0.5rem;
     }
     @keyframes shimmer {
       0% { background-position: 200% 0; }
@@ -94,12 +99,13 @@
     .pagination {
       display: flex;
       justify-content: center;
-      margin-top: 2rem;
-      gap: 0.5rem;
+      margin: 1rem 0.5rem;
+      gap: 0.3rem;
+      flex-wrap: wrap;
     }
     .pagination button {
-      padding: 0.4rem 0.9rem;
-      font-size: 1rem;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.9rem;
       border: none;
       border-radius: var(--radius);
       background: #e5e5ea;
@@ -108,6 +114,25 @@
     .pagination button.active {
       background: var(--accent);
       color: white;
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.4rem;
+        margin-top: 1rem;
+      }
+      select, input[type="text"], .form-links a {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.6rem;
+        min-width: 120px;
+        max-width: 100%;
+      }
+      li {
+        padding: 0.8rem;
+      }
+      li h3 {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
