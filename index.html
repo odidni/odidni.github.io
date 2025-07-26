@@ -222,16 +222,21 @@
         const country = document.getElementById('country-filter').value;
 
         const filtered = allData.filter(post => {
+          const isKR = country === '대한민국';
+          const titleKey = isKR ? '제목' : 'Title';
+          const descKey = isKR ? '내용' : 'Description';
+          const rolesKey = isKR ? '모집 분야' : 'Roles';
+          const typeKey = isKR ? '구분' : 'Type';
+          const countryKey = isKR ? '국가' : 'Country';
+
           const matchesKeyword = !keyword ||
-            (post["제목"] && post["제목"].toLowerCase().includes(keyword)) ||
-            (post["내용"] && post["내용"].toLowerCase().includes(keyword)) ||
-            (post["모집 분야"] && post["모집 분야"].toLowerCase().includes(keyword));
+            (post[titleKey] && post[titleKey].toLowerCase().includes(keyword)) ||
+            (post[descKey] && post[descKey].toLowerCase().includes(keyword)) ||
+            (post[rolesKey] && post[rolesKey].toLowerCase().includes(keyword));
 
-          const matchesCategory = selectedCats.length === 0 || selectedCats.some(cat => post["모집 분야"]?.includes(cat));
-
-          const matchesType = !type || (post["구분"] && post["구분"].toLowerCase().includes(type));
-
-          const matchesCountry = !country || (post["국가"] && post["국가"].includes(country));
+          const matchesCategory = selectedCats.length === 0 || selectedCats.some(cat => post[rolesKey]?.includes(cat));
+          const matchesType = !type || (post[typeKey] && post[typeKey].toLowerCase().includes(type));
+          const matchesCountry = !country || (post[countryKey] && post[countryKey].includes(country));
 
           return matchesKeyword && matchesCategory && matchesType && matchesCountry;
         });
@@ -239,14 +244,22 @@
         const paged = paginate(filtered, currentPage);
         ul.innerHTML = '';
         paged.forEach(post => {
+          const isKR = post['국가'] === '대한민국';
+          const titleKey = isKR ? '제목' : 'Title';
+          const descKey = isKR ? '내용' : 'Description';
+          const rolesKey = isKR ? '모집 분야' : 'Roles';
+          const durationKey = isKR ? '예상 기간' : 'Duration';
+          const countryKey = isKR ? '국가' : 'Country';
+          const linkKey = isKR ? '참고 정보' : 'Link';
+
           const li = document.createElement('li');
           li.innerHTML = `
-            <h3>${post["제목"]}</h3>
-            <p>${post["내용"]}</p>
-            <p><strong>🌍 Country:</strong> ${post["국가"]}</p>
-            <p><strong>📆 Duration:</strong> ${post["예상 기간"]}</p>
-            <p><strong>🧑‍💻 Roles:</strong> ${post["모집 분야"]}</p>
-            ${post["참고 정보"] ? `<p><a href="${post["참고 정보"]}" target="_blank">🔗 More Info</a></p>` : ""}
+            <h3>${post[titleKey]}</h3>
+            <p>${post[descKey]}</p>
+            <p><strong>🌍 Country:</strong> ${post[countryKey]}</p>
+            <p><strong>📆 Duration:</strong> ${post[durationKey]}</p>
+            <p><strong>🧑‍💻 Roles:</strong> ${post[rolesKey]}</p>
+            ${post[linkKey] ? `<p><a href="${post[linkKey]}" target="_blank">🔗 More Info</a></p>` : ""}
           `;
           ul.appendChild(li);
         });
@@ -255,33 +268,24 @@
     }
 
     function loadPosts() {
-    const ul = document.getElementById('post-list');
-    ul.innerHTML = '<li class="skeleton"></li><li class="skeleton"></li><li class="skeleton"></li>';
+      const ul = document.getElementById('post-list');
+      ul.innerHTML = '<li class="skeleton"></li><li class="skeleton"></li><li class="skeleton"></li>';
 
-    const country = document.getElementById('country-filter').value;
-    let url;
+      const country = document.getElementById('country-filter').value;
+      const url = 'https://script.google.com/macros/s/AKfycbwHoe5QiK6ee56qLgMB1G7gfRR36QwQXpXDJj2urIvZb0lM7oykUWe-q5vbMV9kKhmA/exec?country='+country;
 
-    if (country === '대한민국' || country === '') {
-        url = 'https://script.google.com/macros/s/AKfycbyt7Fc4eWESg8kr_Mh_RXJOcjKc546vFNKkRjpRcZyp2rHOL-AyMenxH9PRwNm5NNgU/exec';
-    } else {
-        url = 'https://script.google.com/macros/s/AKfycbyt7Fc4eWESg8kr_Mh_RXJOcjKc546vFNKkRjpRcZyp2rHOL-AyMenxH9PRwNm5NNgU/exec';
-    }
-
-    // country 파라미터 추가
-    url += `?country=${encodeURIComponent(country)}`;
-
-    fetch(url)
+      fetch(url)
         .then(res => res.json())
         .then(data => {
-        allData = data;
-        currentPage = 1;
-        renderPosts();
+          allData = data;
+          currentPage = 1;
+          renderPosts();
         });
     }
 
     document.getElementById('country-filter').addEventListener('change', () => {
       currentPage = 1;
-      renderPosts();
+      loadPosts();
     });
 
     document.getElementById('type-filter').addEventListener('change', () => {
