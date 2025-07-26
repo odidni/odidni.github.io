@@ -15,17 +15,14 @@ document.addEventListener("DOMContentLoaded", () => {
     renderPosts();
   });
 
-  document.querySelector(".close").addEventListener("click", () => {
-    document.getElementById("modal").classList.add("hidden");
-  });
-
+  document.querySelector(".modal .close").addEventListener("click", closeModal);
   window.addEventListener("click", e => {
     if (e.target === document.getElementById("modal")) {
-      document.getElementById("modal").classList.add("hidden");
+      closeModal();
     }
   });
 
-  loadPosts();
+  setDefaultCountry();
 });
 
 function loadPosts() {
@@ -83,24 +80,23 @@ function renderPosts() {
     list.innerHTML = '<tr><td colspan="4">No results found.</td></tr>';
   } else {
     pageData.forEach(post => {
-        const isKR = post["국가"] === "대한민국";
-        const title = isKR ? post["제목"] : post["Title"];
-        const roles = isKR ? post["모집 분야"] : post["Roles"];
-        const duration = isKR ? post["예상 기간"] : post["Duration"];
-        const dateRaw = isKR ? post["등록일"] : post["Date"];
-        const timestamp = post["타임스탬프"];
-        const date = dateRaw || (timestamp ? new Date(timestamp).toISOString().split('T')[0] : '');
+      const isKR = post["국가"] === "대한민국";
+      const title = isKR ? post["제목"] : post["Title"];
+      const roles = isKR ? post["모집 분야"] : post["Roles"];
+      const duration = isKR ? post["예상 기간"] : post["Duration"];
+      const dateRaw = isKR ? post["등록일"] : post["Date"];
+      const timestamp = post["타임스탬프"];
+      const date = dateRaw || (timestamp ? new Date(timestamp).toISOString().split('T')[0] : '');
 
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
         <td>${date}</td>
-        <td class="clickable" data-title="${title}" data-date="${date}">${title}</td>
+        <td class="clickable">${title}</td>
         <td>${roles}</td>
         <td>${duration}</td>
-        `;
-        
-        tr.addEventListener("click", () => showModal(post));
-        list.appendChild(tr);
+      `;
+      tr.addEventListener("click", () => showModal(post));
+      list.appendChild(tr);
     });
   }
 
@@ -125,22 +121,22 @@ function renderPagination(totalItems) {
 }
 
 function autoLinkify(text) {
-    const urlRegex = /(https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=]+)/gi;
-    return text.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+  const urlRegex = /(https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=]+)/gi;
+  return text.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
 }
 
 function showModal(post) {
-    const isKR = post["국가"] === "대한민국";
-    const title = isKR ? post["제목"] : post["Title"];
-    const desc = isKR ? post["내용"] : post["Description"];
-    const roles = isKR ? post["모집 분야"] : post["Roles"];
-    const duration = isKR ? post["예상 기간"] : post["Duration"];
-    const link = isKR ? post["참고 링크"] : post["Link"];
-    const contact = isKR ? post["연락처"] : post["Contact"];
-    const date = isKR ? post["등록일"] || post["타임스탬프"] : post["Date"];
+  const isKR = post["국가"] === "대한민국";
+  const title = isKR ? post["제목"] : post["Title"];
+  const desc = isKR ? post["내용"] : post["Description"];
+  const roles = isKR ? post["모집 분야"] : post["Roles"];
+  const duration = isKR ? post["예상 기간"] : post["Duration"];
+  const link = isKR ? post["참고 링크"] : post["Link"];
+  const contact = isKR ? post["연락처"] : post["Contact"];
+  const date = isKR ? post["등록일"] || post["타임스탬프"] : post["Date"];
 
-    const modalBody = document.getElementById("modal-body");
-    modalBody.innerHTML = `
+  const modalBody = document.getElementById("modal-body");
+  modalBody.innerHTML = `
     <h2>${title}</h2>
     <p><strong>📅 Date:</strong> ${date}</p>
     <p><strong>🧑‍💻 Roles:</strong> ${roles}</p>
@@ -148,23 +144,43 @@ function showModal(post) {
     <p><strong>📬 Contact:</strong> ${autoLinkify(contact || "")}</p>
     <p><strong>📄 Description:</strong><br>${autoLinkify(desc || "")}</p>
     ${link ? `<p><a href="${link}" target="_blank">🔗 More Info</a></p>` : ""}
-    `;
+  `;
 
-    document.getElementById("modal").classList.remove("hidden");
+  document.getElementById("modal").classList.add("show");
+  document.getElementById("modal").classList.remove("hidden");
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const closeBtn = document.querySelector(".modal .close");
-    if (closeBtn) {
-    closeBtn.addEventListener("click", () => {
-        document.getElementById("modal").classList.add("hidden");
-    });
-    }
-});
+function closeModal() {
+  document.getElementById("modal").classList.remove("show");
+  document.getElementById("modal").classList.add("hidden");
+}
+
+function setDefaultCountry() {
+  const langMap = {
+    "ko": "대한민국",
+    "ja": "日本",
+    "zh": "中国",
+    "th": "ไทย",
+    "vi": "Việt Nam",
+    "id": "Indonesia",
+    "en": "United States",
+    "fr": "Français",
+    "es": "España",
+    "de": "Deutschland",
+    "ru": "Россия",
+    "pt": "Brasil",
+    "tr": "Türkiye"
+  };
+
+  const userLang = navigator.language.slice(0, 2);
+  const country = langMap[userLang] || "";
+  const countrySelect = document.getElementById("country-filter");
+  countrySelect.value = country;
+  loadPosts();
+}
 
 function formatDateString(dateStr) {
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return '-';
-  return date.toISOString().split('T')[0]; // 'YYYY-MM-DD'만 추출
+  return date.toISOString().split('T')[0];
 }
-
