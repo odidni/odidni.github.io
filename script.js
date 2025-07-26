@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === document.getElementById("modal")) {
       document.getElementById("modal").classList.add("hidden");
     }
-  });
+  });ㅇ
 
   loadPosts();
 });
@@ -33,7 +33,7 @@ function loadPosts() {
   ul.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
 
   const country = document.getElementById("country-filter").value;
-  const url = `https://script.google.com/macros/s/AKfycbwHoe5QiK6ee56qLgMB1G7gfRR36QwQXpXDJj2urIvZb0lM7oykUWe-q5vbMV9kKhmA/exec?country=${country}`;
+  const url = `https://script.google.com/macros/s/AKfycbx3ewEIrfN2JivG1ebq9aMWWOk4JNMUl9jIgCKZulX8yAyzO_vYbp9TtEqLZx6a--Rp/exec?country=${country}`;
 
   fetch(url)
     .then(res => res.json())
