@@ -77,6 +77,36 @@
 
   <script src="script.js"></script>
   <script>
+    window.addEventListener("DOMContentLoaded", () => {
+        const langMap = {
+        "ko": "대한민국",
+        "ja": "日本",
+        "zh": "中国",
+        "th": "ไทย",
+        "vi": "Việt Nam",
+        "id": "Indonesia",
+        "en": "United States",
+        "fr": "Français",
+        "es": "España",
+        "de": "Deutschland",
+        "ru": "Россия",
+        "pt": "Brasil",
+        "tr": "Türkiye"
+        };
+
+        const userLang = navigator.language.slice(0, 2); // 예: 'ko'
+        const country = langMap[userLang] || ""; // 매칭 안 되면 Global
+        const countrySelect = document.getElementById("country-filter");
+        countrySelect.value = country;
+
+        // 해당 국가로 포스트 불러오기
+        if (typeof loadPosts === "function") {
+        loadPosts();
+        }
+    });
+  </script>
+
+  <script>
     function autoLinkify(text) {
       const urlRegex = /(https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=]+)/gi;
       return text.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
