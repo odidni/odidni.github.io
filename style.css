@@ -77,6 +77,7 @@ input[type="text"],
 #post-table tr:hover {
   background-color: #f9f9f9;
 }
+
 /* row hover 효과 */
 #post-table tbody tr:hover {
   background-color: #f0f8ff; /* 밝은 파란색 배경 */

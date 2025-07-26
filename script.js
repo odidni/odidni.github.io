@@ -124,33 +124,43 @@ function renderPagination(totalItems) {
   }
 }
 
-function showModal(post) {
-  const isKR = post["국가"] === "대한민국";
-  const title = isKR ? post["제목"] : post["Title"];
-  const desc = isKR ? post["내용"] : post["Description"];
-  const type = isKR ? post["구분"] : post["Type"];
-  const roles = isKR ? post["모집 분야"] : post["Roles"];
-  const duration = isKR ? post["예상 기간"] : post["Duration"];
-  const contact = isKR ? post["연락처"] : post["Contact"];
-  const link = isKR ? post["참고 링크"] : post["Link"];
-  const date = isKR ? post["등록일"] : post["Date"];
-
-  const modalBody = document.getElementById("modal-body");
-  const clickableLink = link && link.startsWith("http") ? `<a href="${link}" target="_blank">${link}</a>` : link;
-
-  modalBody.innerHTML = `
-    <h2>${title}</h2>
-    <p><strong>${isKR ? "구분" : "Type"}:</strong> ${type}</p>
-    <p><strong>${isKR ? "내용" : "Description"}:</strong> ${desc}</p>
-    <p><strong>${isKR ? "모집 분야" : "Roles"}:</strong> ${roles}</p>
-    <p><strong>${isKR ? "예상 기간" : "Duration"}:</strong> ${duration}</p>
-    <p><strong>${isKR ? "연락처" : "Contact"}:</strong> ${contact}</p>
-    <p><strong>${isKR ? "참고 링크" : "Link"}:</strong> ${clickableLink}</p>
-    <p><strong>${isKR ? "등록일" : "Date"}:</strong> ${date}</p>
-  `;
-
-  document.getElementById("modal").classList.remove("hidden");
+function autoLinkify(text) {
+    const urlRegex = /(https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=]+)/gi;
+    return text.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
 }
+
+function showModal(post) {
+    const isKR = post["국가"] === "대한민국";
+    const title = isKR ? post["제목"] : post["Title"];
+    const desc = isKR ? post["내용"] : post["Description"];
+    const roles = isKR ? post["모집 분야"] : post["Roles"];
+    const duration = isKR ? post["예상 기간"] : post["Duration"];
+    const link = isKR ? post["참고 링크"] : post["Link"];
+    const contact = isKR ? post["연락처"] : post["Contact"];
+    const date = isKR ? post["등록일"] || post["타임스탬프"] : post["Date"];
+
+    const modalBody = document.getElementById("modal-body");
+    modalBody.innerHTML = `
+    <h2>${title}</h2>
+    <p><strong>📅 Date:</strong> ${date}</p>
+    <p><strong>🧑‍💻 Roles:</strong> ${roles}</p>
+    <p><strong>🕒 Duration:</strong> ${duration}</p>
+    <p><strong>📬 Contact:</strong> ${autoLinkify(contact || "")}</p>
+    <p><strong>📄 Description:</strong><br>${autoLinkify(desc || "")}</p>
+    ${link ? `<p><a href="${link}" target="_blank">🔗 More Info</a></p>` : ""}
+    `;
+
+    document.getElementById("modal").classList.remove("hidden");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const closeBtn = document.querySelector(".modal .close");
+    if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+        document.getElementById("modal").classList.add("hidden");
+    });
+    }
+});
 
 function formatDateString(dateStr) {
   const date = new Date(dateStr);

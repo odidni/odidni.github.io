@@ -5,6 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Oditni - Global Team Finder</title>
   <link rel="stylesheet" href="style.css" />
+    <style>
+    tr:hover {
+      background-color: #f0f0f0;
+      cursor: pointer;
+    }
+    tr:active {
+      background-color: #e0e0e0;
+    }
+    .modal.hidden {
+      display: none;
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90%;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal .close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <h1>어디끼 | Global Team Finder</h1>
@@ -107,38 +148,7 @@
   </script>
 
   <script>
-    function autoLinkify(text) {
-      const urlRegex = /(https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=]+)/gi;
-      return text.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
-    }
 
-    function showModal(post) {
-      const isKR = post["국가"] === "대한민국";
-      const title = isKR ? post["제목"] : post["Title"];
-      const desc = isKR ? post["내용"] : post["Description"];
-      const roles = isKR ? post["모집 분야"] : post["Roles"];
-      const duration = isKR ? post["예상 기간"] : post["Duration"];
-      const link = isKR ? post["참고 링크"] : post["Link"];
-      const contact = isKR ? post["연락처"] : post["Contact"];
-      const date = isKR ? post["등록일"] || post["타임스탬프"] : post["Date"];
-
-      const modalBody = document.getElementById("modal-body");
-      modalBody.innerHTML = `
-        <h2>${title}</h2>
-        <p><strong>📅 Date:</strong> ${date}</p>
-        <p><strong>🧑‍💻 Roles:</strong> ${roles}</p>
-        <p><strong>🕒 Duration:</strong> ${duration}</p>
-        <p><strong>📬 Contact:</strong> ${autoLinkify(contact || "")}</p>
-        <p><strong>📄 Description:</strong><br>${autoLinkify(desc || "")}</p>
-        ${link ? `<p><a href="${link}" target="_blank">🔗 More Info</a></p>` : ""}
-      `;
-
-      document.getElementById("modal").classList.remove("hidden");
-    }
-
-    document.querySelector(".modal .close").addEventListener("click", () => {
-      document.getElementById("modal").classList.add("hidden");
-    });
   </script>
 </body>
 </html>
