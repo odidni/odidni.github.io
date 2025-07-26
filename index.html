@@ -60,37 +60,36 @@
     ul#post-list {
       list-style: none;
       padding: 0;
-      max-width: 700px;
+      max-width: 1000px;
       margin: 0 auto;
     }
     li {
       background: var(--card-bg);
-      margin: 0 0.5rem 0.5rem;
-      padding: 1rem;
+      margin: 0.2rem;
+      padding: 0.6rem;
       border-radius: var(--radius);
       box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
-    li h3 {
-      margin: 0 0 0.3rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-    li p {
-      margin: 0.3rem 0;
+      cursor: pointer;
       font-size: 0.9rem;
-      color: var(--text-sub);
+      display: flex;
+      gap: 1rem;
     }
-    li a {
-      color: var(--accent);
-      text-decoration: none;
+    li span {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    li:hover {
+      background-color: #f0f0f0;
     }
     .skeleton {
       background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
       background-size: 400% 100%;
       animation: shimmer 1.2s infinite;
-      height: 80px;
+      height: 40px;
       border-radius: var(--radius);
-      margin: 0 0.5rem 0.5rem;
+      margin: 0.2rem;
     }
     @keyframes shimmer {
       0% { background-position: 200% 0; }
@@ -115,66 +114,16 @@
       background: var(--accent);
       color: white;
     }
-
     @media (max-width: 480px) {
       h1 {
         font-size: 1.4rem;
         margin-top: 1rem;
-      }
-      select, input[type="text"], .form-links a {
-        font-size: 0.9rem;
-        padding: 0.4rem 0.6rem;
-        min-width: 120px;
-        max-width: 100%;
-      }
-      li {
-        padding: 0.8rem;
-      }
-      li h3 {
-        font-size: 1rem;
       }
     }
   </style>
 </head>
 <body>
   <h1>어디끼 | Global Team Finder</h1>
-  <div class="form-links">
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLScYu05BsNfJ8la860fWReEvrArtUdvka3a83qzYg16D_7x3ag/viewform" target="_blank">✍️ Register </a>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdrK09vgIgKOJCCxjeSXMQWHIOfiihTk-6fcbfaInbB-WOVaA/viewform" target="_blank">✍️ 등록 </a>
-  </div>
-  <div class="filters">
-    <select id="country-filter">
-      <option value="">Global</option>
-      <option value="대한민국">대한민국</option>
-      <option value="日本">日本</option>
-      <option value="中国">中国</option>
-      <option value="ไทย">ไทย</option>
-      <option value="Việt Nam">Việt Nam</option>
-      <option value="Indonesia">Indonesia</option>
-      <option value="United States">United States</option>
-      <option value="Français">Français</option>
-      <option value="España">España</option>
-      <option value="Deutschland">Deutschland</option>
-      <option value="Россия">Россия</option>
-      <option value="Brasil">Brasil</option>
-      <option value="Türkiye">Türkiye</option>
-    </select>
-    <select id="type-filter">
-      <option value="">🔍 All Types</option>
-      <option value="recruiting">🤝 Recruiting</option>
-      <option value="seeking">👤 Seeking Team</option>
-      <option value="both">🔄 Both</option>
-    </select>
-    <div id="category-checkboxes">
-      <label><input type="checkbox" value="Developer" checked> 💻 Developer</label>
-      <label><input type="checkbox" value="Designer"> 🎨 Designer</label>
-      <label><input type="checkbox" value="Planner"> 🧭 Planner</label>
-      <label><input type="checkbox" value="Artist"> 🖌️ Artist</label>
-      <label><input type="checkbox" value="Marketing"> 📣 Marketing</label>
-      <label><input type="checkbox" value="Translator"> 🌍 Translator</label>
-    </div>
-    <input type="text" id="search-input" placeholder="🔍 Search keyword..." />
-  </div>
   <ul id="post-list">
     <li class="skeleton"></li>
     <li class="skeleton"></li>
@@ -182,159 +131,50 @@
   </ul>
   <div class="pagination" id="pagination"></div>
   <script>
-    const pageSize = 5;
-    let currentPage = 1;
-    let allData = [];
+    const query = new URLSearchParams(window.location.search);
+    const titleParam = query.get("title");
+    const timeParam = query.get("time");
 
-    function paginate(data, page) {
-      const start = (page - 1) * pageSize;
-      const end = start + pageSize;
-      return data.slice(start, end);
-    }
-
-    function renderPagination(total) {
-      const totalPages = Math.ceil(total / pageSize);
-      const pagination = document.getElementById('pagination');
-      pagination.innerHTML = '';
-      for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i;
-        if (i === currentPage) btn.classList.add('active');
-        btn.addEventListener('click', () => {
-          currentPage = i;
-          renderPosts();
-        });
-        pagination.appendChild(btn);
-      }
-    }
-
-    function getSelectedCategories() {
-      return Array.from(document.querySelectorAll('#category-checkboxes input[type=checkbox]:checked')).map(cb => cb.value);
-    }
-
-    function renderPosts() {
-      const ul = document.getElementById('post-list');
-      ul.innerHTML = '<li class="skeleton"></li><li class="skeleton"></li><li class="skeleton"></li>';
-      setTimeout(() => {
-        const keyword = document.getElementById('search-input').value.toLowerCase();
-        const selectedCats = getSelectedCategories();
-        const type = document.getElementById('type-filter').value;
-        const country = document.getElementById('country-filter').value;
-
-        const filtered = allData.filter(post => {
-          const isKR = country === '대한민국';
-          const titleKey = isKR ? '제목' : 'Title';
-          const descKey = isKR ? '내용' : 'Description';
-          const rolesKey = isKR ? '모집 분야' : 'Roles';
-          const typeKey = isKR ? '구분' : 'Type';
-          const countryKey = isKR ? '국가' : 'Country';
-
-          const matchesKeyword = !keyword ||
-            (post[titleKey] && post[titleKey].toLowerCase().includes(keyword)) ||
-            (post[descKey] && post[descKey].toLowerCase().includes(keyword)) ||
-            (post[rolesKey] && post[rolesKey].toLowerCase().includes(keyword));
-
-          const matchesCategory = selectedCats.length === 0 || selectedCats.some(cat => post[rolesKey]?.includes(cat));
-          const matchesType = !type || (post[typeKey] && post[typeKey].toLowerCase().includes(type));
-          const matchesCountry = !country || (post[countryKey] && post[countryKey].includes(country));
-
-          return matchesKeyword && matchesCategory && matchesType && matchesCountry;
-        });
-
-        const paged = paginate(filtered, currentPage);
-        ul.innerHTML = '';
-        paged.forEach(post => {
-          const isKR = post['국가'] === '대한민국';
-          const titleKey = isKR ? '제목' : 'Title';
-          const descKey = isKR ? '내용' : 'Description';
-          const rolesKey = isKR ? '모집 분야' : 'Roles';
-          const durationKey = isKR ? '예상 기간' : 'Duration';
-          const countryKey = isKR ? '국가' : 'Country';
-          const linkKey = isKR ? '참고 정보' : 'Link';
-
-          const li = document.createElement('li');
-          li.innerHTML = `
-            <h3>${post[titleKey]}</h3>
-            <p>${post[descKey]}</p>
-            <p><strong>🌍 Country:</strong> ${post[countryKey]}</p>
-            <p><strong>📆 Duration:</strong> ${post[durationKey]}</p>
-            <p><strong>🧑‍💻 Roles:</strong> ${post[rolesKey]}</p>
-            ${post[linkKey] ? `<p><a href="${post[linkKey]}" target="_blank">🔗 More Info</a></p>` : ""}
-          `;
+    fetch("https://script.google.com/macros/s/AKfycbwHoe5QiK6ee56qLgMB1G7gfRR36QwQXpXDJj2urIvZb0lM7oykUWe-q5vbMV9kKhmA/exec?country=대한민국")
+      .then(res => res.json())
+      .then(data => {
+        const ul = document.getElementById("post-list");
+        ul.innerHTML = "";
+        data.forEach(post => {
+          const li = document.createElement("li");
+          li.innerHTML = `<span>${post["제목"] || post["Title"]}</span><span>${post["구분"] || post["Type"]}</span><span>${post["예상 기간"] || post["Duration"]}</span>`;
+          li.addEventListener("click", () => {
+            const desc = post["내용"] || post["Description"];
+            const link = post["참고 정보"] || post["Link"];
+            const roles = post["모집 분야"] || post["Roles"];
+            const modal = document.createElement("div");
+            modal.style.position = "fixed";
+            modal.style.top = "0";
+            modal.style.left = "0";
+            modal.style.width = "100%";
+            modal.style.height = "100%";
+            modal.style.background = "rgba(0,0,0,0.5)";
+            modal.style.display = "flex";
+            modal.style.justifyContent = "center";
+            modal.style.alignItems = "center";
+            modal.innerHTML = `
+              <div style="background:white;padding:1rem;border-radius:var(--radius);max-width:90%;max-height:80%;overflow:auto">
+                <h3>${post["제목"] || post["Title"]}</h3>
+                <p>${desc}</p>
+                <p><strong>Duration:</strong> ${post["예상 기간"] || post["Duration"]}</p>
+                <p><strong>Roles:</strong> ${roles}</p>
+                ${link ? `<p><a href="${link}" target="_blank">More Info</a></p>` : ""}
+                <button onclick="this.parentElement.parentElement.remove()">Close</button>
+              </div>`;
+            document.body.appendChild(modal);
+          });
           ul.appendChild(li);
-        });
-        renderPagination(filtered.length);
-      }, 300);
-    }
 
-    function loadPosts() {
-      const ul = document.getElementById('post-list');
-      ul.innerHTML = '<li class="skeleton"></li><li class="skeleton"></li><li class="skeleton"></li>';
-
-      const country = document.getElementById('country-filter').value;
-      const url = 'https://script.google.com/macros/s/AKfycbwHoe5QiK6ee56qLgMB1G7gfRR36QwQXpXDJj2urIvZb0lM7oykUWe-q5vbMV9kKhmA/exec?country='+country;
-
-      fetch(url)
-        .then(res => res.json())
-        .then(data => {
-          allData = data;
-          currentPage = 1;
-          renderPosts();
-        });
-    }
-
-    document.getElementById('country-filter').addEventListener('change', () => {
-      currentPage = 1;
-      loadPosts();
-    });
-
-    document.getElementById('type-filter').addEventListener('change', () => {
-      currentPage = 1;
-      renderPosts();
-    });
-
-    document.querySelectorAll('#category-checkboxes input[type=checkbox]').forEach(cb => {
-      cb.addEventListener('change', () => {
-        currentPage = 1;
-        renderPosts();
-      });
-    });
-
-    document.getElementById('search-input').addEventListener('input', () => {
-      currentPage = 1;
-      renderPosts();
-    });
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const lang = navigator.language || navigator.userLanguage;
-      const countryMap = {
-        'ko': '대한민국',
-        'ja': '日本',
-        'zh': '中国',
-        'th': 'ไทย',
-        'vi': 'Việt Nam',
-        'id': 'Indonesia',
-        'en': 'United States',
-        'fr': 'Français',
-        'es': 'España',
-        'de': 'Deutschland',
-        'ru': 'Россия',
-        'pt': 'Brasil',
-        'tr': 'Türkiye'
-      };
-      const langCode = lang.slice(0, 2);
-      const defaultCountry = countryMap[langCode];
-      const select = document.getElementById('country-filter');
-      if (defaultCountry) {
-        for (let opt of select.options) {
-          if (opt.value === defaultCountry) {
-            opt.selected = true;
-            break;
+          if (titleParam && timeParam && (post["제목"] === titleParam || post["Title"] === titleParam)) {
+            li.click();
           }
-        }
-      }
-      loadPosts();
-    });
+        });
+      });
   </script>
 </body>
 </html>
