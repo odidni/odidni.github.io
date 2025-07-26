@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === document.getElementById("modal")) {
       document.getElementById("modal").classList.add("hidden");
     }
-  });ㅇ
+  });
 
   loadPosts();
 });
