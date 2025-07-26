@@ -138,38 +138,49 @@
 </head>
 <body>
   <h1>어디끼 | Global Team Finder</h1>
-
   <div class="form-links">
     <a href="https://docs.google.com/forms/d/e/ENGLISH_FORM_LINK/viewform" target="_blank">✍️ Submit (English)</a>
     <a href="https://docs.google.com/forms/d/e/KOREAN_FORM_LINK/viewform" target="_blank">✍️ 팀원 모집 등록 (한국어)</a>
   </div>
-
   <div class="filters">
     <select id="country-filter">
-      <option value="">🌐 All Countries</option>
+      <option value="">🌐 Global</option>
+      <option value="대한민국">대한민국</option>
+      <option value="日本">日本</option>
+      <option value="中国">中国</option>
+      <option value="ไทย">ไทย</option>
+      <option value="Việt Nam">Việt Nam</option>
+      <option value="Indonesia">Indonesia</option>
+      <option value="United States">United States</option>
+      <option value="Français">Français</option>
+      <option value="España">España</option>
+      <option value="Deutschland">Deutschland</option>
+      <option value="Россия">Россия</option>
+      <option value="Brasil">Brasil</option>
+      <option value="Türkiye">Türkiye</option>
     </select>
-
-    <select id="category-filter">
-      <option value="">📁 All Categories</option>
-      <option value="Developer">💻 Developer</option>
-      <option value="Designer">🎨 Designer</option>
-      <option value="Planner">🧭 Planner</option>
-      <option value="Artist">🖌️ Artist</option>
-      <option value="Marketing">📣 Marketing</option>
-      <option value="Translator">🌍 Translator</option>
+    <select id="type-filter">
+      <option value="">🔍 All Types</option>
+      <option value="recruiting">🤝 Recruiting</option>
+      <option value="seeking">👤 Seeking Team</option>
+      <option value="both">🔄 Both</option>
     </select>
-
+    <div id="category-checkboxes">
+      <label><input type="checkbox" value="Developer" checked> 💻 Developer</label>
+      <label><input type="checkbox" value="Designer"> 🎨 Designer</label>
+      <label><input type="checkbox" value="Planner"> 🧭 Planner</label>
+      <label><input type="checkbox" value="Artist"> 🖌️ Artist</label>
+      <label><input type="checkbox" value="Marketing"> 📣 Marketing</label>
+      <label><input type="checkbox" value="Translator"> 🌍 Translator</label>
+    </div>
     <input type="text" id="search-input" placeholder="🔍 Search keyword..." />
   </div>
-
   <ul id="post-list">
     <li class="skeleton"></li>
     <li class="skeleton"></li>
     <li class="skeleton"></li>
   </ul>
-
   <div class="pagination" id="pagination"></div>
-
   <script>
     const apiUrl = 'https://script.google.com/macros/s/AKfycb.../exec';
     const pageSize = 5;
@@ -198,17 +209,33 @@
       }
     }
 
+    function getSelectedCategories() {
+      return Array.from(document.querySelectorAll('#category-checkboxes input[type=checkbox]:checked')).map(cb => cb.value);
+    }
+
     function renderPosts() {
       const ul = document.getElementById('post-list');
       ul.innerHTML = '<li class="skeleton"></li><li class="skeleton"></li><li class="skeleton"></li>';
       setTimeout(() => {
         const keyword = document.getElementById('search-input').value.toLowerCase();
-        const filtered = allData.filter(post =>
-          !keyword ||
-          (post["제목"] && post["제목"].toLowerCase().includes(keyword)) ||
-          (post["내용"] && post["내용"].toLowerCase().includes(keyword)) ||
-          (post["모집 분야"] && post["모집 분야"].toLowerCase().includes(keyword))
-        );
+        const selectedCats = getSelectedCategories();
+        const type = document.getElementById('type-filter').value;
+        const country = document.getElementById('country-filter').value;
+
+        const filtered = allData.filter(post => {
+          const matchesKeyword = !keyword ||
+            (post["제목"] && post["제목"].toLowerCase().includes(keyword)) ||
+            (post["내용"] && post["내용"].toLowerCase().includes(keyword)) ||
+            (post["모집 분야"] && post["모집 분야"].toLowerCase().includes(keyword));
+
+          const matchesCategory = selectedCats.length === 0 || selectedCats.some(cat => post["모집 분야"]?.includes(cat));
+
+          const matchesType = !type || (post["구분"] && post["구분"].toLowerCase().includes(type));
+
+          const matchesCountry = !country || (post["국가"] && post["국가"].includes(country));
+
+          return matchesKeyword && matchesCategory && matchesType && matchesCountry;
+        });
 
         const paged = paginate(filtered, currentPage);
         ul.innerHTML = '';
@@ -228,34 +255,33 @@
       }, 300);
     }
 
-    function loadPosts(country = "", category = "") {
-      let url = apiUrl;
-      const params = [];
-      if (country) params.push(`country=${encodeURIComponent(country)}`);
-      if (params.length) url += `?${params.join("&")}`;
-
+    function loadPosts() {
       const ul = document.getElementById('post-list');
       ul.innerHTML = '<li class="skeleton"></li><li class="skeleton"></li><li class="skeleton"></li>';
-
-      fetch(url)
+      fetch(apiUrl)
         .then(res => res.json())
         .then(data => {
-          allData = data.filter(post => !category || post["모집 분야"].includes(category));
+          allData = data;
           currentPage = 1;
           renderPosts();
         });
     }
 
     document.getElementById('country-filter').addEventListener('change', () => {
-      const country = document.getElementById('country-filter').value;
-      const category = document.getElementById('category-filter').value;
-      loadPosts(country, category);
+      currentPage = 1;
+      renderPosts();
     });
 
-    document.getElementById('category-filter').addEventListener('change', () => {
-      const country = document.getElementById('country-filter').value;
-      const category = document.getElementById('category-filter').value;
-      loadPosts(country, category);
+    document.getElementById('type-filter').addEventListener('change', () => {
+      currentPage = 1;
+      renderPosts();
+    });
+
+    document.querySelectorAll('#category-checkboxes input[type=checkbox]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        currentPage = 1;
+        renderPosts();
+      });
     });
 
     document.getElementById('search-input').addEventListener('input', () => {
@@ -263,7 +289,36 @@
       renderPosts();
     });
 
-    loadPosts();
+    window.addEventListener('DOMContentLoaded', () => {
+      const lang = navigator.language || navigator.userLanguage;
+      const countryMap = {
+        'ko': '대한민국',
+        'ja': '日本',
+        'zh': '中国',
+        'th': 'ไทย',
+        'vi': 'Việt Nam',
+        'id': 'Indonesia',
+        'en': 'United States',
+        'fr': 'Français',
+        'es': 'España',
+        'de': 'Deutschland',
+        'ru': 'Россия',
+        'pt': 'Brasil',
+        'tr': 'Türkiye'
+      };
+      const langCode = lang.slice(0, 2);
+      const defaultCountry = countryMap[langCode];
+      const select = document.getElementById('country-filter');
+      if (defaultCountry) {
+        for (let opt of select.options) {
+          if (opt.value === defaultCountry) {
+            opt.selected = true;
+            break;
+          }
+        }
+      }
+      loadPosts();
+    });
   </script>
 </body>
 </html>
