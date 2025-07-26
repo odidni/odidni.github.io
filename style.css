@@ -77,6 +77,17 @@ input[type="text"],
 #post-table tr:hover {
   background-color: #f9f9f9;
 }
+/* row hover 효과 */
+#post-table tbody tr:hover {
+  background-color: #f0f8ff; /* 밝은 파란색 배경 */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* 클릭 피드백 효과 (선택된 듯한 느낌) */
+#post-table tbody tr:active {
+  background-color: #e0f0ff; /* 클릭 시 더 진한 색상 */
+}
 
 .pagination {
   display: flex;

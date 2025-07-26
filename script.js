@@ -98,6 +98,7 @@ function renderPosts() {
         <td>${roles}</td>
         <td>${duration}</td>
         `;
+        
         tr.addEventListener("click", () => showModal(post));
         list.appendChild(tr);
     });
