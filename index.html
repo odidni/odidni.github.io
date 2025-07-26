@@ -139,12 +139,12 @@
 <body>
   <h1>어디끼 | Global Team Finder</h1>
   <div class="form-links">
-    <a href="https://docs.google.com/forms/d/e/ENGLISH_FORM_LINK/viewform" target="_blank">✍️ Submit (English)</a>
-    <a href="https://docs.google.com/forms/d/e/KOREAN_FORM_LINK/viewform" target="_blank">✍️ 팀원 모집 등록 (한국어)</a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLScYu05BsNfJ8la860fWReEvrArtUdvka3a83qzYg16D_7x3ag/viewform" target="_blank">✍️ Register </a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdrK09vgIgKOJCCxjeSXMQWHIOfiihTk-6fcbfaInbB-WOVaA/viewform" target="_blank">✍️ 등록 </a>
   </div>
   <div class="filters">
     <select id="country-filter">
-      <option value="">🌐 Global</option>
+      <option value="">Global</option>
       <option value="대한민국">대한민국</option>
       <option value="日本">日本</option>
       <option value="中国">中国</option>
@@ -182,7 +182,6 @@
   </ul>
   <div class="pagination" id="pagination"></div>
   <script>
-    const apiUrl = 'https://script.google.com/macros/s/AKfycbwM16zKD7StRvUWs2fFDGqEXnqkkf22I-cH9UXDC1UBxfIPpNt54xgpTJPgJayw9K0j/exec';
     const pageSize = 5;
     let currentPage = 1;
     let allData = [];
@@ -258,7 +257,11 @@
     function loadPosts() {
       const ul = document.getElementById('post-list');
       ul.innerHTML = '<li class="skeleton"></li><li class="skeleton"></li><li class="skeleton"></li>';
-      fetch(apiUrl)
+
+      const country = document.getElementById('country-filter').value;
+      const url = 'https://script.google.com/macros/s/AKfycbwHoe5QiK6ee56qLgMB1G7gfRR36QwQXpXDJj2urIvZb0lM7oykUWe-q5vbMV9kKhmA/exec?country='+country;
+
+      fetch(url)
         .then(res => res.json())
         .then(data => {
           allData = data;
