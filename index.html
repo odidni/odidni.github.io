@@ -255,18 +255,27 @@
     }
 
     function loadPosts() {
-      const ul = document.getElementById('post-list');
-      ul.innerHTML = '<li class="skeleton"></li><li class="skeleton"></li><li class="skeleton"></li>';
+    const ul = document.getElementById('post-list');
+    ul.innerHTML = '<li class="skeleton"></li><li class="skeleton"></li><li class="skeleton"></li>';
 
-      const country = document.getElementById('country-filter').value;
-      const url = 'https://script.google.com/macros/s/AKfycbwHoe5QiK6ee56qLgMB1G7gfRR36QwQXpXDJj2urIvZb0lM7oykUWe-q5vbMV9kKhmA/exec?country='+country;
+    const country = document.getElementById('country-filter').value;
+    let url;
 
-      fetch(url)
+    if (country === '대한민국' || country === '') {
+        url = 'https://script.google.com/macros/s/AKfycbyt7Fc4eWESg8kr_Mh_RXJOcjKc546vFNKkRjpRcZyp2rHOL-AyMenxH9PRwNm5NNgU/exec';
+    } else {
+        url = 'https://script.google.com/macros/s/AKfycbyt7Fc4eWESg8kr_Mh_RXJOcjKc546vFNKkRjpRcZyp2rHOL-AyMenxH9PRwNm5NNgU/exec';
+    }
+
+    // country 파라미터 추가
+    url += `?country=${encodeURIComponent(country)}`;
+
+    fetch(url)
         .then(res => res.json())
         .then(data => {
-          allData = data;
-          currentPage = 1;
-          renderPosts();
+        allData = data;
+        currentPage = 1;
+        renderPosts();
         });
     }
 
